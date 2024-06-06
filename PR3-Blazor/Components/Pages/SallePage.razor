@@ -1,12 +1,75 @@
 ﻿@page "/sallePage"
 
 
+
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @using Newtonsoft.Json
 @using PR3_Blazor.Components.Models
+@using PR3_Blazor.Components.Services
+@using Blazored.Modal;
+@using Blazored.Modal.Services
 
+@inject SalleService SalleService
+
+<h3>Liste des Salles </h3>
+
+@if (salleList != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var salle in salleList)
+            {
+                <tr>
+                    <td width="20">@salle.Id</td>
+                    <td width="20">@salle.Numero</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => DeleteSalle(salle.Id)">Editer</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteSalle(salle.Id)">Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h3> Ajouter une Salle </h3>
+
+
+<button @onclick="@(() => Modal.Show<TestForm>("My Movies"))">View Movies</button>
 
 @code {
 
+    [CascadingParameter] public IModalService Modal { get; set; } = default!;
+
+
+
+    List<Salle>? salleList;
+    private readonly HttpClient _httpClient;
+
+    Salle newSalle = new Salle();
+
+    protected override async Task OnInitializedAsync()
+    {
+        salleList = await SalleService.GetAllSalle();
+    }
+
+    private async Task AddSalle()
+    {
+        await SalleService.AddSalle(newSalle);
+        salleList = await SalleService.GetAllSalle();
+        newSalle = new Salle();
+    }
+
+    private async Task DeleteSalle(int salleId)
+    {
+        await SalleService.DeleteSalle(salleId);
+    }
 }

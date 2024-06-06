@@ -2,7 +2,7 @@
 {
     public class Salle
     {
-    public long Id { get; set; }
+    public int Id { get; set; }
     public string Numero { get; set; }
     }
 }
