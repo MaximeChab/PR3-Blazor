@@ -9,8 +9,10 @@
 @using PR3_Blazor.Components.Services
 @using Blazored.Modal;
 @using Blazored.Modal.Services
-
+@using NetcodeHub.Packages.Components.Modal
 @inject SalleService SalleService
+@rendermode InteractiveServer
+
 
 <h3>Liste des Salles </h3>
 
@@ -31,7 +33,7 @@
                     <td width="20">@salle.Id</td>
                     <td width="20">@salle.Numero</td>
                     <td>
-                        <button class="btn btn-primary" @onclick="() => DeleteSalle(salle.Id)">Editer</button>
+                        <button class="btn btn-primary" @onclick="ShowConfirmation">Editer</button>
                         <button class="btn btn-danger" @onclick="() => DeleteSalle(salle.Id)">Supprimer</button>
                     </td>
                 </tr>
@@ -41,13 +43,87 @@
 }
 
 <h3> Ajouter une Salle </h3>
+<button class="btn btn-info" @onclick="OpenModal">Open modal</button>
+<br />
+Selected Action: @SelectedAction
+<br />
+Confirmation : @Confirm
+<Confirmation @ref="confirmation"
+              Instruction="@Instruction"
+              Action="Action"
+              BoostrapClass="border-danger"
+              CustomStyle="width:300px" />
 
 
-<button @onclick="@(() => Modal.Show<TestForm>("My Movies"))">View Movies</button>
+
+<Modal Actions="ButtonActions"
+       BootstrapClass="border-success"
+       CustomStyle="width:400px"
+       @bind-Open="IsOpen">
+
+    <ContentContent>
+                <form action="/submit" method="post">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="id">Id :</label>
+                        <input type="text" id="id" name="id" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="numero">Numéro :</label>
+                        <input type="text" id="numero" name="numero" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="etablissement">Etablissement :</label>
+                        <select id="etablissement" name="etablissement" required>
+                            <option value="" disabled selected>Choisissez un établissement</option>
+                            <option value="etablissement1">Etablissement 1</option>
+                            <option value="etablissement2">Etablissement 2</option>
+                            <option value="etablissement3">Etablissement 3</option>
+                        </select>
+                    </div>
+                </form>
+    </ContentContent>
+    <ButtonTemplate>
+        <div class="d-flex justify-content-center align-content-center">
+            <button class="btn btn-success btn-sm" value="ok" style="margin-right:5px">Enregistrer</button>
+            <button class="btn btn-danger btn-sm" value="cancel">Annuler</button>
+        </div>
+    </ButtonTemplate>
+</Modal>
 
 @code {
+    public bool IsOpen { get; set; }
+    public string? SelectedAction { get; set; }
+    public bool Confirm { get; set; }
+    Confirmation? confirmation;
+    public string? Instruction { get; set; } = "Confirm for User deletion";
+    void Action()
+    {
+        // perform database operation such as delete
+    }
 
-    [CascadingParameter] public IModalService Modal { get; set; } = default!;
+    void ShowConfirmation() => confirmation.Show();
+
+
+    void ButtonActions(string action)
+    {
+        SelectedAction = action;
+        if (action == "ok")
+        {
+            // do something
+        }
+        else if (action == "cancel")
+        {
+            // you can also do something
+        }
+    }
+
+    void OpenModal() => IsOpen = true;
+
+
+
+
+
+
 
 
 
