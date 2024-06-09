@@ -10,6 +10,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<SalleService>();
 builder.Services.AddScoped<PosteService>();
+builder.Services.AddScoped<EtablissementService>();
 
 var app = builder.Build();
 

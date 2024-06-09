@@ -24,6 +24,10 @@ namespace PR3_Blazor.Components.Services
             return JsonConvert.DeserializeObject<List<Salle>>(data);
         }
 
+        /**public async Task<List<Salle>> GetAllSalleByEtablissment()
+        {
+        }**/
+
         public async Task<Salle> GetSalleById(int salleId)
         {
             HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5252/api/Salles/{salleId}");
@@ -37,7 +41,7 @@ namespace PR3_Blazor.Components.Services
         {
             var salleFormated = JsonConvert.SerializeObject(salle);
             var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://localhost:5000/api/Salles", content);
+            var response = await _httpClient.PostAsync("http://localhost:5252/api/Salles", content);
             response.EnsureSuccessStatusCode();
         }
 
@@ -45,13 +49,13 @@ namespace PR3_Blazor.Components.Services
         {
             var salleFormated = JsonConvert.SerializeObject(salle);
             var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync("http://localhost:5000/api/Salles/{salle.id}", content);
+            var response = await _httpClient.PutAsync("http://localhost:5252/api/Salles/{salle.id}", content);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteSalle(int salleId)
         {
-            var response = await _httpClient.DeleteAsync($"http://localhost:5000/api/Users/{salleId}");
+            var response = await _httpClient.DeleteAsync($"http://localhost:5252/api/Salles/{salleId}");
             response.EnsureSuccessStatusCode();
 
         }

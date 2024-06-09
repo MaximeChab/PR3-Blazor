@@ -10,7 +10,10 @@
 @using Blazored.Modal;
 @using Blazored.Modal.Services
 @using NetcodeHub.Packages.Components.Modal
+
 @inject SalleService SalleService
+@inject EtablissementService EtablissementService
+
 @rendermode InteractiveServer
 
 
@@ -42,12 +45,9 @@
     </table>
 }
 
-<h3> Ajouter une Salle </h3>
-<button class="btn btn-info" @onclick="OpenModal">Open modal</button>
-<br />
-Selected Action: @SelectedAction
-<br />
-Confirmation : @Confirm
+<button class="btn btn-info" @onclick="OpenModal">Ajouter une Salle</button>
+
+
 <Confirmation @ref="confirmation"
               Instruction="@Instruction"
               Action="Action"
@@ -56,85 +56,73 @@ Confirmation : @Confirm
 
 
 
-<Modal Actions="ButtonActions"
-       BootstrapClass="border-success"
+<Modal BootstrapClass="border-success"
        CustomStyle="width:400px"
        @bind-Open="IsOpen">
-
     <ContentContent>
-                <form action="/submit" method="post">
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="id">Id :</label>
-                        <input type="text" id="id" name="id" required>
-                    </div>
+
+        <form @onsubmit="AddSalle">
                     <div class="form-group" style="margin-bottom: 15px;">
                         <label for="numero">Numéro :</label>
-                        <input type="text" id="numero" name="numero" required>
+                        <input type="text" id="numero" @bind="newSalle.Numero" required>
                     </div>
                     <div class="form-group" style="margin-bottom: 15px;">
                         <label for="etablissement">Etablissement :</label>
-                        <select id="etablissement" name="etablissement" required>
+                        <select id="etablissement" name="etablissement" @bind="newSalle.EtablissementId" required>
                             <option value="" disabled selected>Choisissez un établissement</option>
-                            <option value="etablissement1">Etablissement 1</option>
-                            <option value="etablissement2">Etablissement 2</option>
-                            <option value="etablissement3">Etablissement 3</option>
+                    @if (etablissementList != null)
+                    {
+                        @foreach (var etablissement in etablissementList)
+                        {
+                            <option value="@etablissement.Id">@etablissement.Nom</option>
+                        }
+                    }
                         </select>
                     </div>
-                </form>
+            <div class="d-flex justify-content-center align-content-center">
+                <button type="submit" class="btn btn-success btn-sm" value="ok" style="margin-right:5px">Enregistrer</button>
+                <button type="button" class="btn btn-danger btn-sm" @onclick="CloseModal">Annuler</button>
+            </div>
+        </form>
     </ContentContent>
-    <ButtonTemplate>
-        <div class="d-flex justify-content-center align-content-center">
-            <button class="btn btn-success btn-sm" value="ok" style="margin-right:5px">Enregistrer</button>
-            <button class="btn btn-danger btn-sm" value="cancel">Annuler</button>
-        </div>
-    </ButtonTemplate>
 </Modal>
 
 @code {
-    public bool IsOpen { get; set; }
-    public string? SelectedAction { get; set; }
-    public bool Confirm { get; set; }
+
     Confirmation? confirmation;
     public string? Instruction { get; set; } = "Confirm for User deletion";
+    void ShowConfirmation() => confirmation.Show();
     void Action()
     {
-        // perform database operation such as delete
+        //SalleService.DeleteSalle()
     }
 
-    void ShowConfirmation() => confirmation.Show();
-
-
-    void ButtonActions(string action)
-    {
-        SelectedAction = action;
-        if (action == "ok")
-        {
-            // do something
-        }
-        else if (action == "cancel")
-        {
-            // you can also do something
-        }
-    }
-
-    void OpenModal() => IsOpen = true;
-
-
-
-
-
-
-
-
-
-    List<Salle>? salleList;
     private readonly HttpClient _httpClient;
+    List<Salle>? salleList;
+    List<Etablissement>? etablissementList;
 
     Salle newSalle = new Salle();
+
+    public bool IsOpen { get; set; }
+
+
+
+
+
+
+
+    void OpenModal() => IsOpen = true;
+    void CloseModal() => IsOpen = false;
+
+
+
+
+
 
     protected override async Task OnInitializedAsync()
     {
         salleList = await SalleService.GetAllSalle();
+        etablissementList = await EtablissementService.GetAllEtablissement();
     }
 
     private async Task AddSalle()
@@ -147,5 +135,9 @@ Confirmation : @Confirm
     private async Task DeleteSalle(int salleId)
     {
         await SalleService.DeleteSalle(salleId);
+        salleList = await SalleService.GetAllSalle();
+
     }
+
+
 }
