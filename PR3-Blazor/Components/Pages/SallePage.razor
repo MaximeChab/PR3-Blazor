@@ -26,6 +26,7 @@
             <tr>
                 <th>ID</th>
                 <th>Numéro</th>
+                <th>Etablissement</th>
                 <th></th>
             </tr>
         </thead>
@@ -35,6 +36,7 @@
                 <tr>
                     <td width="20">@salle.Id</td>
                     <td width="20">@salle.Numero</td>
+                    <td width="20">EtablissementID</td>
                     <td>
                         <button class="btn btn-primary" @onclick="() => OpenUpdateModal(salle.Id)">Editer</button>
                         <button class="btn btn-danger" @onclick="() => DeleteSalle(salle.Id)">Supprimer</button>
@@ -43,16 +45,18 @@
             }
         </tbody>
     </table>
+
+    <button class="btn btn-info" @onclick="OpenModal">Ajouter une Salle</button>
+
+}
+else
+{
+    <p>Chargement des salles ...</p>
 }
 
-<button class="btn btn-info" @onclick="OpenModal">Ajouter une Salle</button>
 
 
-<Confirmation @ref="confirmation"
-              Instruction="@Instruction"
-              Action="Action"
-              BoostrapClass="border-danger"
-              CustomStyle="width:300px" />
+
 
 
 
@@ -64,11 +68,11 @@
         <form @onsubmit="AddSalle">
                     <div class="form-group" style="margin-bottom: 15px;">
                         <label for="numero">Numéro :</label>
-                        <input type="text" id="numero" @bind="newSalle.Numero" required>
+                        <input type="text" id="numero" @bind="salle.Numero" required>
                     </div>
                     <div class="form-group" style="margin-bottom: 15px;">
                         <label for="etablissement">Etablissement :</label>
-                        <select id="etablissement" name="etablissement" @bind="newSalle.EtablissementId" required>
+                <select id="etablissement" name="etablissement" @bind="salle.EtablissementId" required>
                             <option value="" disabled selected>Choisissez un établissement</option>
                     @if (etablissementList != null)
                     {
@@ -96,11 +100,11 @@
         <form @onsubmit="UpdateSalle">
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="numero">Numéro :</label>
-                <input type="text" id="numero" @bind="newSalle.Numero" required>
+                <input type="text" id="numero" @bind="salle.Numero" required>
             </div>
             <div class="form-group" style="margin-bottom: 15px;">
                     <label for="etablissement">Etablissement :</label>
-                    <select id="etablissement" name="etablissement" @bind="newSalle.EtablissementId" required>
+                <select id="etablissement" name="etablissement" @bind="salle.EtablissementId" required>
                         <option value="" disabled selected>Choisissez un établissement</option>
                     @if (etablissementList != null)
                     {
@@ -121,21 +125,33 @@
 
 @code {
 
-    Confirmation? confirmation;
+    /**
+ <Confirmation @ref="confirmation"
+              Instruction="@Instruction"
+              Action="Action"
+              BoostrapClass="border-danger"
+              CustomStyle="width:300px" />
+
+
+
+
+     Confirmation? confirmation;
     public string? Instruction { get; set; } = "Confirm for User deletion";
     void ShowConfirmation() => confirmation.Show();
     void Action()
     {
         //SalleService.DeleteSalle()
     }
+    
+    **/
 
 
 
-    private readonly HttpClient _httpClient;
+    //private readonly HttpClient _httpClient;
     List<Salle>? salleList;
     List<Etablissement>? etablissementList;
 
-    Salle newSalle = new Salle();
+    Salle salle = new Salle();
 
     public bool IsOpen { get; set; }
     public bool IsUpdateOpen { get; set; }
@@ -148,13 +164,13 @@
 
     async Task OpenUpdateModal(int salleId)
     {
-        newSalle = await SalleService.GetSalleById(salleId);
+        salle = await SalleService.GetSalleById(salleId);
         IsUpdateOpen = true;
     }
     void CloseUpdateModal()
     {
         IsUpdateOpen = false;
-        newSalle = new Salle();
+        salle = new Salle();
 
     }
 
@@ -167,18 +183,18 @@
 
     private async Task AddSalle()
     {
-        await SalleService.AddSalle(newSalle);
+        await SalleService.AddSalle(salle);
         salleList = await SalleService.GetAllSalle();
-        newSalle = new Salle();
+        salle = new Salle();
         CloseModal();
 
     }
 
     private async Task UpdateSalle()
     {
-        await SalleService.UpdateSalle(newSalle);
+        await SalleService.UpdateSalle(salle);
         salleList = await SalleService.GetAllSalle();
-        newSalle = new Salle();
+        salle = new Salle();
         CloseUpdateModal();
     }
 

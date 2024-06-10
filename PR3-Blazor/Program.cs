@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UtilisateurService>();
 builder.Services.AddScoped<SalleService>();
 builder.Services.AddScoped<PosteService>();
 builder.Services.AddScoped<EtablissementService>();
