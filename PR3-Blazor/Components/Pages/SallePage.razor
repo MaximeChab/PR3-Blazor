@@ -25,7 +25,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Nom</th>
+                <th>Numéro</th>
                 <th></th>
             </tr>
         </thead>
@@ -36,7 +36,7 @@
                     <td width="20">@salle.Id</td>
                     <td width="20">@salle.Numero</td>
                     <td>
-                        <button class="btn btn-primary" @onclick="ShowConfirmation">Editer</button>
+                        <button class="btn btn-primary" @onclick="() => OpenUpdateModal(salle.Id)">Editer</button>
                         <button class="btn btn-danger" @onclick="() => DeleteSalle(salle.Id)">Supprimer</button>
                     </td>
                 </tr>
@@ -74,10 +74,10 @@
                     {
                         @foreach (var etablissement in etablissementList)
                         {
-                            <option value="@etablissement.Id">@etablissement.Nom</option>
+                            <option value="@etablissement.Id"> @etablissement.Nom </option>
                         }
                     }
-                        </select>
+                    </select>
                     </div>
             <div class="d-flex justify-content-center align-content-center">
                 <button type="submit" class="btn btn-success btn-sm" value="ok" style="margin-right:5px">Enregistrer</button>
@@ -85,6 +85,38 @@
             </div>
         </form>
     </ContentContent>
+</Modal>
+
+
+<Modal BootstrapClass="border-success"
+       CustomStyle="width:400px"
+       @bind-Open="IsUpdateOpen">
+       <ContentContent>
+
+        <form @onsubmit="UpdateTask">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="numero">Numéro :</label>
+                <input type="text" id="numero" @bind="newSalle.Numero" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="etablissement">Etablissement :</label>
+                    <select id="etablissement" name="etablissement" @bind="newSalle.EtablissementId" required>
+                        <option value="" disabled selected>Choisissez un établissement</option>
+                    @if (etablissementList != null)
+                    {
+                        @foreach (var etablissement in etablissementList)
+                        {
+                            <option value="@etablissement.Id"> @etablissement.Nom </option>
+                        }
+                    }
+                    </select>
+            </div>
+            <div class="d-flex justify-content-center align-content-center">
+                <button type="submit" class="btn btn-success btn-sm" value="ok" style="margin-right:5px">Enregistrer</button>
+                <button type="button" class="btn btn-danger btn-sm" @onclick="CloseUpdateModal">Annuler</button>
+            </div>
+        </form>
+       </ContentContent>
 </Modal>
 
 @code {
@@ -97,6 +129,8 @@
         //SalleService.DeleteSalle()
     }
 
+
+
     private readonly HttpClient _httpClient;
     List<Salle>? salleList;
     List<Etablissement>? etablissementList;
@@ -104,10 +138,7 @@
     Salle newSalle = new Salle();
 
     public bool IsOpen { get; set; }
-
-
-
-
+    public bool IsUpdateOpen { get; set; }
 
 
 
@@ -115,9 +146,17 @@
     void CloseModal() => IsOpen = false;
 
 
+    async Task OpenUpdateModal(int salleId)
+    {
+        newSalle = await SalleService.GetSalleById(salleId);
+        IsUpdateOpen = true;
+    }
+    void CloseUpdateModal()
+    {
+        IsUpdateOpen = false;
+        newSalle = new Salle();
 
-
-
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,9 +164,18 @@
         etablissementList = await EtablissementService.GetAllEtablissement();
     }
 
+
     private async Task AddSalle()
     {
         await SalleService.AddSalle(newSalle);
+        salleList = await SalleService.GetAllSalle();
+        newSalle = new Salle();
+        CloseModal();
+    }
+
+    private async Task UpdateTask()
+    {
+        await SalleService.UpdateSalle(newSalle);
         salleList = await SalleService.GetAllSalle();
         newSalle = new Salle();
     }

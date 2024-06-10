@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Text;
 using System.Net.Http;
+using System;
 
 namespace PR3_Blazor.Components.Services
 {
@@ -28,13 +29,14 @@ namespace PR3_Blazor.Components.Services
         {
         }**/
 
-        public async Task<Salle> GetSalleById(int salleId)
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5252/api/Salles/{salleId}");
+        public async Task<Salle> GetSalleById(int salleId) { 
+
+            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5252/api/Salles/{salleId}");
             response.EnsureSuccessStatusCode();
 
             string data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Salle>(data);
+        
         }
 
         public async Task AddSalle(Salle salle)
@@ -47,10 +49,11 @@ namespace PR3_Blazor.Components.Services
 
         public async Task UpdateSalle(Salle salle)
         {
-            var salleFormated = JsonConvert.SerializeObject(salle);
-            var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync("http://localhost:5252/api/Salles/{salle.id}", content);
-            response.EnsureSuccessStatusCode();
+                var salleFormated = JsonConvert.SerializeObject(salle);
+                var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync("http://localhost:5252/api/Salles/{salle.Id}", content);
+                response.EnsureSuccessStatusCode();
+
         }
 
         public async Task DeleteSalle(int salleId)
