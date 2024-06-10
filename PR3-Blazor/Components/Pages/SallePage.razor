@@ -93,7 +93,7 @@
        @bind-Open="IsUpdateOpen">
        <ContentContent>
 
-        <form @onsubmit="UpdateTask">
+        <form @onsubmit="UpdateSalle">
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="numero">Numéro :</label>
                 <input type="text" id="numero" @bind="newSalle.Numero" required>
@@ -171,13 +171,15 @@
         salleList = await SalleService.GetAllSalle();
         newSalle = new Salle();
         CloseModal();
+
     }
 
-    private async Task UpdateTask()
+    private async Task UpdateSalle()
     {
         await SalleService.UpdateSalle(newSalle);
         salleList = await SalleService.GetAllSalle();
         newSalle = new Salle();
+        CloseUpdateModal();
     }
 
     private async Task DeleteSalle(int salleId)

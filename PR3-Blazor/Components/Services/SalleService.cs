@@ -51,7 +51,7 @@ namespace PR3_Blazor.Components.Services
         {
                 var salleFormated = JsonConvert.SerializeObject(salle);
                 var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync("http://localhost:5252/api/Salles/{salle.Id}", content);
+                var response = await _httpClient.PutAsync($"http://localhost:5252/api/Salles/{salle.Id}", content);
                 response.EnsureSuccessStatusCode();
 
         }
