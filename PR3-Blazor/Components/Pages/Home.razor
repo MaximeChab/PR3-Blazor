@@ -1,12 +1,49 @@
 ﻿@page "/"
+@using PR3_Blazor.Components.Models
+@using PR3_Blazor.Components.Services
 
+@inject UtilisateurService UtilisateurService
+@inject IJSRuntime JS
+
+@rendermode InteractiveServer
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
+
 
 Welcome to your new app.
 
 
 @code{
+
+    private bool _initialized = false;
+    private string _token;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        _token = await UtilisateurService.UserExist("", "");
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Perform the token storage only on the first render
+        if (firstRender && !_initialized)
+        {
+            _initialized = true;
+
+            if (!string.IsNullOrEmpty(_token))
+            {
+                await StoreTokenAsync(_token);
+            }
+        }
+    }
+
+    private async Task StoreTokenAsync(string token)
+    {
+        await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+    }
 
 }

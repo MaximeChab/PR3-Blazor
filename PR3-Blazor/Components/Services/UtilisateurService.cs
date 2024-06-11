@@ -4,6 +4,10 @@ using System.Text;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.JSInterop;
+using System.Net.Http.Headers;
 
 
 namespace PR3_Blazor.Components.Services
@@ -11,13 +15,19 @@ namespace PR3_Blazor.Components.Services
     public class UtilisateurService
 {
         private readonly HttpClient _httpClient;
+        private readonly IJSRuntime _jsRuntime;
 
-        public UtilisateurService(HttpClient httpClient)
+        public UtilisateurService(HttpClient httpClient, IJSRuntime jsRuntime)
         {
             _httpClient = httpClient;
+            _jsRuntime = jsRuntime;
+
         }
         public async Task<List<Utilisateur>> GetAllUtilisateur()
         {
+            string token = await GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5252/api/Utilisateurs");
             response.EnsureSuccessStatusCode();
 
@@ -27,6 +37,8 @@ namespace PR3_Blazor.Components.Services
 
         public async Task<Utilisateur> GetUtilisateurById(int utilisateurId)
         {
+            string token = await GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5252/api/Utilisateurs/{utilisateurId}");
             response.EnsureSuccessStatusCode();
@@ -36,8 +48,12 @@ namespace PR3_Blazor.Components.Services
 
         }
 
-        public async Task AddUtilisateur(Utilisateur utilisateur)
+        public async Task AddUtilisateur(Utilisateur utilisateur) 
         {
+            string token = await GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
             var UtilisateurFormated = JsonConvert.SerializeObject(utilisateur);
             var content = new StringContent(UtilisateurFormated, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("http://localhost:5252/api/Utilisateurs/Create", content);
@@ -46,6 +62,9 @@ namespace PR3_Blazor.Components.Services
 
         public async Task UpdateUtilisateur(Utilisateur utilisateur)
         {
+            string token = await GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             var UtilisateurFormated = JsonConvert.SerializeObject(utilisateur);
             var content = new StringContent(UtilisateurFormated, Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync($"http://localhost:5252/api/Utilisateurs/{utilisateur.Id}", content);
@@ -55,17 +74,21 @@ namespace PR3_Blazor.Components.Services
 
         public async Task DeleteUtilisateur(int utilisateurId)
         {
+            string token = await GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             var response = await _httpClient.DeleteAsync($"http://localhost:5252/api/Utilisateurs/{utilisateurId}");
             response.EnsureSuccessStatusCode();
 
         }
 
-        public async Task<string> UseExist(LoginRequest loginRequest)
+        public async Task<string> UserExist(string login, string motDePasse)
         {
+            LoginRequest loginRequest = new LoginRequest();
             loginRequest.Login = "admin";
-            loginRequest.MotDePasse = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+            loginRequest.MotDePasse = "admin";
 
-            var response = await _httpClient.PostAsJsonAsync("api/Utilisateurs/Exist", loginRequest);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5252/api/Utilisateurs/Exist", loginRequest);
 
             if (response.IsSuccessStatusCode)
             {
@@ -80,6 +103,12 @@ namespace PR3_Blazor.Components.Services
                 // You might want to throw an exception or return a specific result
                 return null;
             }
+        }
+
+
+        public async Task<string> GetTokenFromSessionAsync()
+        {
+            return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
         }
 
 

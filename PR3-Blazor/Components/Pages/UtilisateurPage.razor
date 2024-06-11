@@ -126,31 +126,31 @@ else
     List<Utilisateur>? userList;
     Utilisateur utilisateur = new Utilisateur();
 
+    private bool _initialized;
+
     public bool IsOpen { get; set; }
     public bool IsUpdateOpen { get; set; }
 
 
 
-    void OpenModal() => IsOpen = true;
-    void CloseModal() => IsOpen = false;
 
 
-    async Task OpenUpdateModal(int utlisateurId)
-    {
-        utilisateur = await UtilisateurService.GetUtilisateurById(utlisateurId);
-        IsUpdateOpen = true;
-    }
-    void CloseUpdateModal()
-    {
-        IsUpdateOpen = false;
-        utilisateur = new Utilisateur();
 
-    }
 
     protected override async Task OnInitializedAsync()
     {
-        userList = await UtilisateurService.GetAllUtilisateur();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initialized)
+        {
+            _initialized = true;
+            userList = await UtilisateurService.GetAllUtilisateur();
+
+        }
+    }
+
 
 
     private async Task AddUtilisateur()
@@ -176,4 +176,21 @@ else
         userList = await UtilisateurService.GetAllUtilisateur();
 
     }
+
+    void OpenModal() => IsOpen = true;
+    void CloseModal() => IsOpen = false;
+
+
+    async Task OpenUpdateModal(int utlisateurId)
+    {
+        utilisateur = await UtilisateurService.GetUtilisateurById(utlisateurId);
+        IsUpdateOpen = true;
+    }
+    void CloseUpdateModal()
+    {
+        IsUpdateOpen = false;
+        utilisateur = new Utilisateur();
+
+    }
+
 }
