@@ -1,0 +1,24 @@
+﻿@page "/login"
+@inject UtilisateurService UtilisateurService
+
+<h3>Login</h3>
+
+<EditForm Model="loginRequest" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="login">Login:</label>
+        <InputText id="login" @bind-Value="loginRequest.Login" />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <InputText id="password" type="password" @bind-Value="loginRequest.MotDePasse" />
+    </div>
+    <button type="submit">Login</button>
+</EditForm>
+
+@code{
+
+
+}
