@@ -11,6 +11,8 @@ builder.Services.AddScoped<UtilisateurService>();
 builder.Services.AddScoped<SalleService>();
 builder.Services.AddScoped<PosteService>();
 builder.Services.AddScoped<EtablissementService>();
+builder.Services.AddScoped<AuthService>();
+
 
 var app = builder.Build();
 

@@ -28,7 +28,7 @@ namespace PR3_Blazor.Components.Services
             string token = await GetTokenFromSessionAsync();
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5252/api/Utilisateurs");
+            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5011/api/Utilisateurs");
             response.EnsureSuccessStatusCode();
 
             string data = await response.Content.ReadAsStringAsync();
@@ -40,7 +40,7 @@ namespace PR3_Blazor.Components.Services
             string token = await GetTokenFromSessionAsync();
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5252/api/Utilisateurs/{utilisateurId}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5011/api/Utilisateurs/{utilisateurId}");
             response.EnsureSuccessStatusCode();
 
             string data = await response.Content.ReadAsStringAsync();
@@ -56,7 +56,7 @@ namespace PR3_Blazor.Components.Services
 
             var UtilisateurFormated = JsonConvert.SerializeObject(utilisateur);
             var content = new StringContent(UtilisateurFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://localhost:5252/api/Utilisateurs/Create", content);
+            var response = await _httpClient.PostAsync("http://localhost:5011/api/Utilisateurs/Create", content);
             response.EnsureSuccessStatusCode();
         }
 
@@ -67,7 +67,7 @@ namespace PR3_Blazor.Components.Services
 
             var UtilisateurFormated = JsonConvert.SerializeObject(utilisateur);
             var content = new StringContent(UtilisateurFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"http://localhost:5252/api/Utilisateurs/{utilisateur.Id}", content);
+            var response = await _httpClient.PutAsync($"http://localhost:5011/api/Utilisateurs/{utilisateur.Id}", content);
             response.EnsureSuccessStatusCode();
 
         }
@@ -77,7 +77,7 @@ namespace PR3_Blazor.Components.Services
             string token = await GetTokenFromSessionAsync();
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.DeleteAsync($"http://localhost:5252/api/Utilisateurs/{utilisateurId}");
+            var response = await _httpClient.DeleteAsync($"http://localhost:5011/api/Utilisateurs/{utilisateurId}");
             response.EnsureSuccessStatusCode();
 
         }
@@ -88,7 +88,7 @@ namespace PR3_Blazor.Components.Services
             loginRequest.Login = "admin";
             loginRequest.MotDePasse = "admin";
 
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5252/api/Utilisateurs/Exist", loginRequest);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5011/api/Utilisateurs/Exist", loginRequest);
 
             if (response.IsSuccessStatusCode)
             {

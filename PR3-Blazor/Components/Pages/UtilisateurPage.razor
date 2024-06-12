@@ -127,28 +127,27 @@ else
     Utilisateur utilisateur = new Utilisateur();
 
     private bool _initialized;
+    private bool _isFirstRender = true;
 
     public bool IsOpen { get; set; }
     public bool IsUpdateOpen { get; set; }
 
 
 
-
-
-
-
-    protected override async Task OnInitializedAsync()
-    {
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !_initialized)
+        if (firstRender && _isFirstRender)
         {
-            _initialized = true;
-            userList = await UtilisateurService.GetAllUtilisateur();
-
+            _isFirstRender = false;
+            await FetchUserList();
+            StateHasChanged(); // Notify Blazor that the state has changed so it can re-render the component
         }
+    }
+
+    private async Task FetchUserList()
+    {
+        userList = await UtilisateurService.GetAllUtilisateur();
+        _initialized = true;
     }
 
 
