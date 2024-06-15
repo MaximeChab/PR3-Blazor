@@ -108,24 +108,26 @@ else
     List<Poste>? posteList;
     List<Salle>? salleList;
     Poste poste = new Poste();
-    public bool IsOpen { get; set; }
 
 
-    async Task OpenUpdateModal(int posteId)
+    private bool _initialized;
+    private bool _isFirstRender = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        poste = await PosteService.GetPosteById(posteId);
-        IsOpen = true;
+        if (firstRender && _isFirstRender)
+        {
+            _isFirstRender = false;
+            await FetchPosteList();
+            StateHasChanged(); // Notify Blazor that the state has changed so it can re-render the component
+        }
     }
-    void CloseUpdateModal()
-    {
-        IsOpen = false;
-        poste = new Poste();
 
-    }
-    protected override async Task OnInitializedAsync()
+    private async Task FetchPosteList()
     {
         posteList = await PosteService.GetAllPoste();
         salleList = await SalleService.GetAllSalle();
+        _initialized = true;
     }
 
 
@@ -141,5 +143,20 @@ else
     {
         await PosteService.DeletePoste(salleId);
         posteList = await PosteService.GetAllPoste();
+    }
+
+    public bool IsOpen { get; set; }
+
+
+    async Task OpenUpdateModal(int posteId)
+    {
+        poste = await PosteService.GetPosteById(posteId);
+        IsOpen = true;
+    }
+    void CloseUpdateModal()
+    {
+        IsOpen = false;
+        poste = new Poste();
+
     }
 }

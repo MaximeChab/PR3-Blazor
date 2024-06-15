@@ -1,25 +1,33 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.JSInterop;
 using static PR3_Blazor.Components.Services.UtilisateurService;
 
 namespace PR3_Blazor.Components.Services
 {
     public class AuthService
 {
-        private readonly HttpClient _httpClient;
-        private readonly IJSRuntime _jsRuntime;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(HttpClient httpClient, IJSRuntime jsRuntime)
+
+        public AuthService(IHttpContextAccessor httpContextAccessor)
         {
-            _httpClient = httpClient;
-            _jsRuntime = jsRuntime;
+        _httpContextAccessor = httpContextAccessor;
+
 
         }
-        public async Task<string> GetToken()
+
+        public string GetTokenFromSessionAsync()
         {
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5011/Auth", new { });
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<JwtResponse>();
-            return result.Token;
+            var principal = _httpContextAccessor.HttpContext?.User;
+            if (principal != null)
+            {
+                var tokenClaim = principal.FindFirst("token");
+                if (tokenClaim != null)
+                {
+                    return tokenClaim.Value;
+                }
+            }
+            return null;
         }
     }
 }

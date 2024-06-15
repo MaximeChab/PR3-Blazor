@@ -11,14 +11,19 @@ namespace PR3_Blazor.Components.Services
 
     {
         private readonly HttpClient _httpClient;
+        private readonly AuthService _authService;
 
-        public SalleService(HttpClient httpClient)
+        public SalleService(HttpClient httpClient, AuthService authService)
         {
             _httpClient = httpClient;
+            _authService = authService;
         }
         public async Task<List<Salle>> GetAllSalle()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5252/api/Salles");
+            string token =  _authService.GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5011/api/Salles");
             response.EnsureSuccessStatusCode();
 
             string data = await response.Content.ReadAsStringAsync();
@@ -29,9 +34,11 @@ namespace PR3_Blazor.Components.Services
         {
         }**/
 
-        public async Task<Salle> GetSalleById(int salleId) { 
+        public async Task<Salle> GetSalleById(int salleId) {
+            string token =  _authService.GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5252/api/Salles/{salleId}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"http://localhost:5000/api/Salles/{salleId}");
             response.EnsureSuccessStatusCode();
 
             string data = await response.Content.ReadAsStringAsync();
@@ -41,24 +48,33 @@ namespace PR3_Blazor.Components.Services
 
         public async Task AddSalle(Salle salle)
         {
+            string token =  _authService.GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             var salleFormated = JsonConvert.SerializeObject(salle);
             var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://localhost:5252/api/Salles", content);
+            var response = await _httpClient.PostAsync("http://localhost:5000/api/Salles", content);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task UpdateSalle(Salle salle)
         {
-                var salleFormated = JsonConvert.SerializeObject(salle);
+            string token =  _authService.GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var salleFormated = JsonConvert.SerializeObject(salle);
                 var content = new StringContent(salleFormated, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"http://localhost:5252/api/Salles/{salle.Id}", content);
+                var response = await _httpClient.PutAsync($"http://localhost:5000/api/Salles/{salle.Id}", content);
                 response.EnsureSuccessStatusCode();
 
         }
 
         public async Task DeleteSalle(int salleId)
         {
-            var response = await _httpClient.DeleteAsync($"http://localhost:5252/api/Salles/{salleId}");
+            string token =  _authService.GetTokenFromSessionAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.DeleteAsync($"http://localhost:5000/api/Salles/{salleId}");
             response.EnsureSuccessStatusCode();
 
         }

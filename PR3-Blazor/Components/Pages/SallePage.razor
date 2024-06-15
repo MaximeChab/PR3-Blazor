@@ -153,32 +153,30 @@ else
 
     Salle salle = new Salle();
 
-    public bool IsOpen { get; set; }
-    public bool IsUpdateOpen { get; set; }
+    private bool _initialized;
+    private bool _isFirstRender = true;
 
-
-
-    void OpenModal() => IsOpen = true;
-    void CloseModal() => IsOpen = false;
-
-
-    async Task OpenUpdateModal(int salleId)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        salle = await SalleService.GetSalleById(salleId);
-        IsUpdateOpen = true;
-    }
-    void CloseUpdateModal()
-    {
-        IsUpdateOpen = false;
-        salle = new Salle();
-
+        if (firstRender && _isFirstRender)
+        {
+            _isFirstRender = false;
+            await FetchSalleList();
+            StateHasChanged(); // Notify Blazor that the state has changed so it can re-render the component
+        }
     }
 
-    protected override async Task OnInitializedAsync()
+    private async Task FetchSalleList()
     {
         salleList = await SalleService.GetAllSalle();
         etablissementList = await EtablissementService.GetAllEtablissement();
+        _initialized = true;
     }
+    /*protected override async Task OnInitializedAsync()
+    {
+        salleList = await SalleService.GetAllSalle();
+        etablissementList = await EtablissementService.GetAllEtablissement();
+    }*/
 
 
     private async Task AddSalle()
@@ -205,5 +203,21 @@ else
 
     }
 
+    public bool IsOpen { get; set; }
+    public bool IsUpdateOpen { get; set; }
 
+    void OpenModal() => IsOpen = true;
+    void CloseModal() => IsOpen = false;
+
+    async Task OpenUpdateModal(int salleId)
+    {
+        salle = await SalleService.GetSalleById(salleId);
+        IsUpdateOpen = true;
+    }
+    void CloseUpdateModal()
+    {
+        IsUpdateOpen = false;
+        salle = new Salle();
+
+    }
 }
