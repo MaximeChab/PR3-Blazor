@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Authentication.Cookies;
 @using System.Security.Claims;
 
-@inject UtilisateurService utilisateurServuce
+@inject UtilisateurService utilisateurService
 @inject NavigationManager navigationManager
 @inject IJSRuntime JS
 
@@ -58,7 +58,7 @@
                 MotDePasse = Model.Password
             };
 
-        var result = await utilisateurServuce.LoginAsync(loginRequest);
+        var result = await utilisateurService.LoginAsync(loginRequest);
 
 
         if (!result.isSuccess)

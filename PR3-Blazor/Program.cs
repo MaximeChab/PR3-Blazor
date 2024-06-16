@@ -21,6 +21,8 @@ builder.Services.AddScoped<SalleService>();
 builder.Services.AddScoped<PosteService>();
 builder.Services.AddScoped<EtablissementService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IncidentService>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

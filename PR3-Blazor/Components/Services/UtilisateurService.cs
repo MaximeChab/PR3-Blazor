@@ -29,7 +29,7 @@ namespace PR3_Blazor.Components.Services
         }
         public async Task<(bool isSuccess,string token, Utilisateur utilisateur)> LoginAsync(LoginRequest loginRequest)
         {
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5011/api/utilisateurs/login", loginRequest);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5000/api/utilisateurs/login", loginRequest);
 
             if (response.IsSuccessStatusCode)
             {
@@ -83,13 +83,14 @@ namespace PR3_Blazor.Components.Services
         }
         public async Task AddUtilisateur(Utilisateur utilisateur) 
         {
+            utilisateur.Role = "user";
             string token =  _authService.GetTokenFromSessionAsync();
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 
             var UtilisateurFormated = JsonConvert.SerializeObject(utilisateur);
             var content = new StringContent(UtilisateurFormated, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://localhost:5000/api/Utilisateurs", content);
+            var response = await _httpClient.PostAsync("http://localhost:5000/api/Utilisateurs/Create", content);
             response.EnsureSuccessStatusCode();
         }
 
